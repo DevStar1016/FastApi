@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+bs4
+requests
+aiohttp
+asyncio
+apscheduler
+supabase
