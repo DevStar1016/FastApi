@@ -1,5 +1,6 @@
 import aiohttp
 import asyncio
+import requests
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 from supabase import create_client
@@ -21,13 +22,15 @@ async def eventfinda():
             href_value = pagination_count_tag.get('href') if pagination_count_tag else None # type: ignore
             pagination_count = href_value.split('/')[-1] if href_value else None # type: ignore
             
-            for index in range(0, int(pagination_count)): # type: ignore
+            # for index in range(0, int(pagination_count)): # type: ignore
+            for index in range(0, 1): # type: ignore
                 page_url = 'https://www.eventfinda.co.nz/whatson/events/new-zealand/page' + '/{}'.format(index)
-                page_content = await fetch_event_data(session, page_url)
-                soup = BeautifulSoup()
+                page_content = requests.get(page_url).text
+                soup = BeautifulSoup(page_content, 'lxml')
                 card_tags = soup.find_all('div', class_="d-flex align-items-stretch col-12 col-md-6 col-lg-4 col-xl-3")
                 count_per_page = len(card_tags)
+                print('count_per_page', count_per_page)
             
-            
+             
 
 # asyncio.run(eventfinda())

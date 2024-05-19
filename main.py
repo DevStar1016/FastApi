@@ -52,7 +52,7 @@ if __name__ == "__main__":
     if os.getenv('mode') == 'production':
         print('Running Cronjob')
         scheduler.add_job(cronjob, 'interval', minutes=60)
-        scheduler.start()    
+        scheduler.start()
     else:
         print('Running Thread')
         thread = threading.Thread(target=lambda: asyncio.run(cronjob()))
