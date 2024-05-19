@@ -6,3 +6,4 @@ aiohttp
 asyncio
 apscheduler
 supabase
+lxml
