@@ -28,9 +28,29 @@ async def eventfinda():
                 page_content = requests.get(page_url).text
                 soup = BeautifulSoup(page_content, 'lxml')
                 card_tags = soup.find_all('div', class_="d-flex align-items-stretch col-12 col-md-6 col-lg-4 col-xl-3")
-                count_per_page = len(card_tags)
-                print('count_per_page', count_per_page)
-            
+                for card_tag in card_tags:
+                    target_id = 'eventfinda'
+                    target_url = 'eventfinda.co.nz'
+                    
+                    title_tag = card_tag.find('a', class_='url summary')
+                    event_title = title_tag.text if title_tag else ""
+                    
+                    description_tag = 
+                    
+                    category_tag = card_tag.find('span', class_='category')
+                    event_category = category_tag.text.strip()
+                    
+                    location_tag = card_tag.find('span', class_='p-locality')
+                    event_location = location_tag.text.replace('&nbsp', '')
+                    
+                    date_tag = card_tag.find('span', class_='value-title')
+                    event_date = date_tag.get('title')
+                    
+                    img_tag = card_tag.find('img', class_='card-img-top')
+                    event_imgurl = img_tag.get('src') if img_tag else ""
+                    
+                    
+
              
 
 # asyncio.run(eventfinda())

@@ -20,7 +20,6 @@ async def visitperth():
         total_count = res_data["Count"] if res_data else 0
         target_url = 'https://visitperth.com'
         target_id = "visitperth"
-        supabase.table('Event').delete().eq("target_url", target_url).execute()
         for index in range(0, total_count, 9):
             event_data = await fetch_event_data(session, visitperth_API_URL + "e={}&o=EventNextDate%2CAscending".format(index))
             count_per_page = len(event_data['Results']) if event_data['Results'] else 0
