@@ -12,6 +12,7 @@ import threading
 # import each scraping function for all sites.
 from visit.visitperth import visitperth
 from visit.eventfinda import eventfinda
+from visit.undertheradar import undertheradar
 
 scheduler = BackgroundScheduler()
 app = FastAPI()
@@ -42,8 +43,10 @@ def retrieve_event(target_id: str):
 async def cronjob():
     # print("VisitPerth function is running at", datetime.now())
     # await visitperth()
-    print('EventFinda function is running at', datetime.now())
-    await eventfinda()
+    # print('EventFinda function is running at', datetime.now())
+    # await eventfinda()
+    print('Undertheradar function is running at', datetime.now())
+    await undertheradar()
 
 
 if __name__ == "__main__":

@@ -33,58 +33,61 @@ async def visitperth():
                 soup1 = BeautifulSoup(HTML, 'lxml')
                 
                 print('============================\n')
-                
-                # category
-                category_tag = soup1.find('div', class_="events__item-panel-content-header-location field-title")
-                event_category = category_tag.text if category_tag else ""
 
                 # title
                 title_tag = soup.find('h1', class_='field-title')
                 event_title = title_tag.text if title_tag else ""
                 print(f'-Title ==> {event_title}')
-
-                # description
-                desc_tag = soup.find('p', class_="intro-text")
-                if desc_tag:
-                    event_description = desc_tag.text
-                else:
-                    field_content_tag = title_tag.find_next('div', class_="field-content") if title_tag else ""
-                    event_description = field_content_tag.text if field_content_tag else ""
-
-                # date and time
-                date_tag = soup.find('p', class_='field-datesandtime')
-                event_date = date_tag.get_text(separator='\n', strip=True) if date_tag else ""
-
-                # location
-                location_tag = soup.find('p', class_='field-navigationtitle')
-                event_locaiton = location_tag.text if location_tag else ""
-
-                # img's url
-                img_tag = soup.find('img', {'data-variantfieldname': 'OpenGraphImageUrl'})
-                event_imgurl = img_tag['src'] if img_tag else "" # type: ignore
-                
-                #script
-                script_tag = soup.find('script', {'type': 'application/ld+json'})
-                json_data = json.loads(script_tag.string) if script_tag else None # type: ignore
-                
                 
                 #checking duplicate of datas
                 data_exists = supabase.table("Event") \
                     .select("target_url, event_title") \
                     .eq("event_title", event_title) \
-                    .eq("event_category", event_category) \
+                    .eq("target_id", target_id) \
                     .execute()
+                    
                 if len(data_exists.data) == 0:
+                    # category
+                    category_tag = soup1.find('div', class_="events__item-panel-content-header-location field-title")
+                    event_category = category_tag.text if category_tag else ""
+
+                    # description
+                    desc_tag = soup.find('p', class_="intro-text")
+                    if desc_tag:
+                        event_description = desc_tag.text
+                    else:
+                        field_content_tag = title_tag.find_next('div', class_="field-content") if title_tag else ""
+                        event_description = field_content_tag.text if field_content_tag else ""
+
+                    # date and time
+                    date_tag = soup.find('p', class_='field-datesandtime')
+                    event_date = date_tag.get_text(separator='\n', strip=True) if date_tag else ""
+
+                    # location
+                    location_tag = soup.find('p', class_='field-navigationtitle')
+                    event_location = location_tag.text if location_tag else ""
+
+                    # img's url
+                    img_tag = soup.find('img', {'data-variantfieldname': 'OpenGraphImageUrl'})
+                    event_imgurl = img_tag['src'] if img_tag else "" # type: ignore
+                    
+                    #script
+                    script_tag = soup.find('script', {'type': 'application/ld+json'})
+                    json_data = json.loads(script_tag.string) if script_tag else None # type: ignore
+                
                     code, count = supabase.table('Event').insert({
                         "target_id": target_id,
                         "target_url": target_url,
                         "event_title": event_title,
                         "event_description": event_description,
                         "event_category": event_category,
-                        "event_location": event_locaiton,
+                        "event_location": event_location,
                         "event_time": event_date,
                         "event_imgurl": event_imgurl,
                         "json_data": json_data
                     }).execute()
-
+                
+                else:
+                    continue
+    return 1
 ######################################################

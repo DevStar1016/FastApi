@@ -35,6 +35,7 @@ async def eventfinda():
                     target_url = 'eventfinda.co.nz'
                     
                     print('-------------------------------------------')
+                    
                     title_tag = card_tag.find('a', class_='url summary')
                     event_title = title_tag.text if title_tag else ""
                     detail_url = 'https://www.eventfinda.co.nz' + title_tag.get('href')
@@ -88,4 +89,5 @@ async def eventfinda():
                             "event_imgurl": event_imgurl,
                             "json_data": json_data
                         }).execute()
+    return 1
 # asyncio.run(eventfinda())
