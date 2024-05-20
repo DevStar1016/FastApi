@@ -14,6 +14,7 @@ from visit.visitperth import visitperth
 from visit.eventfinda import eventfinda
 from visit.undertheradar import undertheradar
 from visit.nzso import nzso
+from visit.mytauranga import mytauranga
 
 scheduler = BackgroundScheduler()
 app = FastAPI()
@@ -45,7 +46,8 @@ async def cronjob():
     # await visitperth()
     # await eventfinda()
     # await undertheradar()
-    await nzso()
+    # await nzso()
+    await mytauranga()
 
 
 if __name__ == "__main__":

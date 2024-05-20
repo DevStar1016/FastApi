@@ -84,4 +84,5 @@ async def undertheradar():
                     }).execute()
                 else:
                     continue
+    return 1
 # asyncio.run(undertheradar())
