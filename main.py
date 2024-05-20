@@ -13,6 +13,7 @@ import threading
 from visit.visitperth import visitperth
 from visit.eventfinda import eventfinda
 from visit.undertheradar import undertheradar
+from visit.nzso import nzso
 
 scheduler = BackgroundScheduler()
 app = FastAPI()
@@ -41,12 +42,10 @@ def retrieve_event(target_id: str):
 
 # CronJob function
 async def cronjob():
-    # print("VisitPerth function is running at", datetime.now())
     # await visitperth()
-    # print('EventFinda function is running at', datetime.now())
     # await eventfinda()
-    print('Undertheradar function is running at', datetime.now())
-    await undertheradar()
+    # await undertheradar()
+    await nzso()
 
 
 if __name__ == "__main__":
