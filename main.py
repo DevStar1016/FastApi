@@ -16,6 +16,7 @@ from visit.undertheradar import undertheradar
 from visit.nzso import nzso
 from visit.mytauranga import mytauranga
 from visit.jazz import jazz
+from visit.atc import atc
 # -------- END --------
 
 scheduler = BackgroundScheduler()
@@ -50,7 +51,8 @@ async def cronjob():
     # await undertheradar()
     # await nzso()
     # await mytauranga()
-    await jazz()
+    # await jazz()
+    await atc()
 
 
 if __name__ == "__main__":
