@@ -11,11 +11,11 @@ import re
 load_dotenv()
 supabase = create_client(os.getenv('SUPABASE_URL'), os.getenv('SUPABASE_KEY')) # type: ignore
 
-ComedyFestival_API_URL = 'https://www.comedyfestival.co.nz/find-a-show?start=45'
+Server_API_URL = 'https://www.comedyfestival.co.nz/find-a-show?start=45'
 
 async def comedyfestival():
     async with aiohttp.ClientSession() as session:
-        async with session.get(ComedyFestival_API_URL) as response:
+        async with session.get(Server_API_URL) as response:
             res_data = await response.read()
             initsoup = BeautifulSoup(res_data, 'lxml')
             
@@ -69,7 +69,7 @@ async def comedyfestival():
     
                         #date
                         date_tag = card_tag.find('span', class_='date')
-                        event_date = date_tag.text.strip()
+                        event_time = date_tag.text.strip()
                         
                         json_data = None
                         
@@ -80,7 +80,7 @@ async def comedyfestival():
                             "event_description": event_description,
                             "event_category": event_category,
                             "event_location": event_location,
-                            "event_time": event_date,
+                            "event_time": event_time,
                             "event_imgurl": event_imgurl,
                             "json_data": json_data
                         }).execute()

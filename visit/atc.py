@@ -11,7 +11,7 @@ import os
 load_dotenv()
 supabase = create_client(os.getenv('SUPABASE_URL'), os.getenv('SUPABASE_KEY')) # type: ignore
 
-Atc_API_URL = "https://www.atc.co.nz/umbraco/api/whatsonapi/getshows"
+Server_API_URL = "https://www.atc.co.nz/umbraco/api/whatsonapi/getshows"
 #target
 target_id = 'atc'
 target_url = 'https://www.atc.co.nz/'
@@ -28,6 +28,7 @@ async def atc():
     events = res_data['Data']['Shows']
     for event in events:
         event_title = event['Heading']
+        
         #checking duplicate of datas
         data_exists = supabase.table("Event") \
             .select("target_url, event_title") \
@@ -41,7 +42,7 @@ async def atc():
             event_category = ""
             if len(event['Tags']) > 0:
                 event_category = ','.join(event['Tags'])
-            event_date = event['PerformanceDates'][0] if len(event['PerformanceDates']) > 0 else ""
+            event_time = event['PerformanceDates'][0] if len(event['PerformanceDates']) > 0 else ""
             event_location = event['Company']['Name']
             detailed_url = target_url + event['Url']
             json_data = {
@@ -54,7 +55,7 @@ async def atc():
                 "event_description": event_description,
                 "event_category": event_category,
                 "event_location": event_location,
-                "event_time": event_date,
+                "event_time": event_time,
                 "event_imgurl": event_imgurl,
                 "json_data": json_data
             }).execute()
