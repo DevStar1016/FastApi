@@ -68,7 +68,7 @@ async def undertheradar():
                         json_data = data_list[0] if len(data_list) > 0 else None
                     except json.JSONDecodeError as e:
                         print(f"Error decoding JSON: {e}")
-                        data_list = []
+                        json_data = None
                 
                 
                     code, count = supabase.table('Event').insert({
@@ -84,4 +84,5 @@ async def undertheradar():
                     }).execute()
                 else:
                     continue
+    return 1
 # asyncio.run(undertheradar())
