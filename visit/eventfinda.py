@@ -10,11 +10,11 @@ import os
 load_dotenv()
 supabase = create_client(os.getenv('SUPABASE_URL'), os.getenv('SUPABASE_KEY')) # type: ignore
 
-eventfinda_API_URL = "https://www.eventfinda.co.nz/whatson/events/new-zealand"
+Server_API_URL = "https://www.eventfinda.co.nz/whatson/events/new-zealand"
 
 async def eventfinda():
     async with aiohttp.ClientSession() as session:
-        async with session.get(eventfinda_API_URL) as response:
+        async with session.get(Server_API_URL) as response:
             res_data = await response.read()
             init_soup = BeautifulSoup(res_data, 'lxml')
             temp_tag = init_soup.find('li', class_="page-item last")
@@ -63,8 +63,8 @@ async def eventfinda():
                         # print('event_location', event_location)
                         
                         date_tag = card_tag.find('span', class_='value-title')
-                        event_date = date_tag.get('title')
-                        # print('event_date', event_date)
+                        event_time = date_tag.get('title')
+                        # print('event_time', event_time)
                         
                         img_tag = card_tag.find('img', class_='card-img-top')
                         event_imgurl = img_tag.get('src') if img_tag else ""
@@ -86,7 +86,7 @@ async def eventfinda():
                             "event_description": event_description,
                             "event_category": event_category,
                             "event_location": event_location,
-                            "event_time": event_date,
+                            "event_time": event_time,
                             "event_imgurl": event_imgurl,
                             "json_data": json_data
                         }).execute()

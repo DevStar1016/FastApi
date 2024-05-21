@@ -10,11 +10,11 @@ import os
 load_dotenv()
 supabase = create_client(os.getenv('SUPABASE_URL'), os.getenv('SUPABASE_KEY')) # type: ignore
 
-Jazz_API_URL = "https://jazz.org.nz/2024-events/"
+Server_API_URL = "https://jazz.org.nz/2024-events/"
 
 async def jazz():
     async with aiohttp.ClientSession() as session:
-        async with session.get(Jazz_API_URL) as response:
+        async with session.get(Server_API_URL) as response:
             res_data = await response.read()
             soup = BeautifulSoup(res_data, 'lxml')
             nav_tags = soup.find_all('nav', class_='elementor-nav-menu--dropdown elementor-nav-menu__container')
@@ -47,7 +47,7 @@ async def jazz():
                         
                         #date
                         date_tag = list_tags[0]
-                        event_date = date_tag.text.strip()
+                        event_time = date_tag.text.strip()
                             
                         #location
                         location_tag = list_tags[1]
@@ -81,7 +81,7 @@ async def jazz():
                             "event_description": event_description if event_description else event_title,
                             "event_category": event_category,
                             "event_location": event_location,
-                            "event_time": event_date,
+                            "event_time": event_time,
                             "event_imgurl": event_imgurl,
                             "json_data": json_data
                         }).execute()

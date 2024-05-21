@@ -10,12 +10,11 @@ import os
 load_dotenv()
 supabase = create_client(os.getenv('SUPABASE_URL'), os.getenv('SUPABASE_KEY')) # type: ignore
 
-undertheradar_API_URL = "https://www.undertheradar.co.nz/utr/gig_guide/&limit=5000"
-Under_API_URL = 'https://www.undertheradar.co.nz/panels/shows/showPanelListAjax.php?offset=0&limit=5000&regionID=&historyUrl=/utr/gig_guide'
+Server_API_URL = 'https://www.undertheradar.co.nz/panels/shows/showPanelListAjax.php?offset=0&limit=5000&regionID=&historyUrl=/utr/gig_guide'
 
 async def undertheradar():
     async with aiohttp.ClientSession() as session:
-        async with session.get(Under_API_URL) as response:
+        async with session.get(Server_API_URL) as response:
             res_data = await response.read()
             init_soup = BeautifulSoup(res_data, 'lxml')
             card_tags = init_soup.find_all('div', class_='vevent')
@@ -55,8 +54,9 @@ async def undertheradar():
                     print('event_location', event_location)
                     
                     date_tag = card_tag.find('span', class_='value-title')
-                    event_date = date_tag.get('title')
-                    print('event_date', event_date)
+                    event_time = date_tag.get('title')
+                    print('event_time', 
+                          )
                    
                     img_tag = soup_detailed.find('img', id='myImage')
                     event_imgurl = img_tag.get('src') if img_tag else "" # type: ignore
@@ -78,7 +78,7 @@ async def undertheradar():
                         "event_description": event_description,
                         "event_category": event_category,
                         "event_location": event_location,
-                        "event_time": event_date,
+                        "event_time": event_time,
                         "event_imgurl": event_imgurl,
                         "json_data": json_data
                     }).execute()

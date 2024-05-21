@@ -8,7 +8,7 @@ import os
 import json
 
 
-visitperth_API_URL = "https://visitperth.com//sxa/search/results/?s={14E2C192-4BC0-4A31-9087-B2AE40ABF102}&itemid={E517F851-E724-4E93-A8C5-9A08C7A9F414}&sig=&autoFireSearch=true&eventenddate=20240510%7C&v=%7BDDEACEB1-9378-4FA6-872B-ED1F97C0476F%7D&p=9&"
+Server_API_URL = "https://visitperth.com//sxa/search/results/?s={14E2C192-4BC0-4A31-9087-B2AE40ABF102}&itemid={E517F851-E724-4E93-A8C5-9A08C7A9F414}&sig=&autoFireSearch=true&eventenddate=20240510%7C&v=%7BDDEACEB1-9378-4FA6-872B-ED1F97C0476F%7D&p=9&"
 
 load_dotenv()
 supabase: Client = create_client(os.getenv('SUPABASE_URL'), os.getenv('SUPABASE_KEY')) # type: ignore
@@ -16,12 +16,12 @@ supabase: Client = create_client(os.getenv('SUPABASE_URL'), os.getenv('SUPABASE_
 
 async def visitperth():
     async with aiohttp.ClientSession() as session:
-        res_data = await fetch_event_data(session, visitperth_API_URL + "e={}&o=EventNextDate%2CAscending".format(0))
+        res_data = await fetch_event_data(session, Server_API_URL + "e={}&o=EventNextDate%2CAscending".format(0))
         total_count = res_data["Count"] if res_data else 0
         target_url = 'https://visitperth.com'
         target_id = "visitperth"
         for index in range(0, total_count, 9):
-            event_data = await fetch_event_data(session, visitperth_API_URL + "e={}&o=EventNextDate%2CAscending".format(index))
+            event_data = await fetch_event_data(session, Server_API_URL + "e={}&o=EventNextDate%2CAscending".format(index))
             count_per_page = len(event_data['Results']) if event_data['Results'] else 0
             
             for alpha in range(0, count_per_page):
@@ -61,7 +61,7 @@ async def visitperth():
 
                     # date and time
                     date_tag = soup.find('p', class_='field-datesandtime')
-                    event_date = date_tag.get_text(separator='\n', strip=True) if date_tag else ""
+                    event_time = date_tag.get_text(separator='\n', strip=True) if date_tag else ""
 
                     # location
                     location_tag = soup.find('p', class_='field-navigationtitle')
@@ -82,7 +82,7 @@ async def visitperth():
                         "event_description": event_description,
                         "event_category": event_category,
                         "event_location": event_location,
-                        "event_time": event_date,
+                        "event_time": event_time,
                         "event_imgurl": event_imgurl,
                         "json_data": json_data
                     }).execute()

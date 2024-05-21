@@ -11,11 +11,11 @@ import os
 load_dotenv()
 supabase = create_client(os.getenv('SUPABASE_URL'), os.getenv('SUPABASE_KEY')) # type: ignore
 
-Mytauranga_API_URL = 'https://www.mytauranga.co.nz/'
+Server_API_URL = 'https://www.mytauranga.co.nz/'
 
 async def mytauranga():
     async with aiohttp.ClientSession() as session:
-        async with session.get(Mytauranga_API_URL) as response:
+        async with session.get(Server_API_URL) as response:
             res_data = await response.read()
             soup = BeautifulSoup(res_data, 'lxml')
             
@@ -26,7 +26,7 @@ async def mytauranga():
             filter_string_arr = []
             
             target_id = 'matauranga'
-            target_url = Mytauranga_API_URL
+            target_url = Server_API_URL
             
             for filter_btn in filter_btns:
                 if filter_btn.get('data-filter') == '*':
@@ -35,7 +35,7 @@ async def mytauranga():
                     filter_string_arr.append(filter_btn.get('data-filter'))
             
             for filter_str in filter_string_arr:
-                filtered_url = Mytauranga_API_URL + '#filter=' + filter_str
+                filtered_url = Server_API_URL + '#filter=' + filter_str
                 filtered_detail = requests.get(filtered_url)
                 soup_filtered = BeautifulSoup(filtered_detail.text, 'lxml')
                                 
@@ -70,7 +70,7 @@ async def mytauranga():
                         soup_detailed = BeautifulSoup(res_detailed_data.text, 'lxml')
                         
                         date_tag = soup_detailed.find('span', class_='featuredEventTime')
-                        event_date = date_tag.text.strip() if date_tag else ""
+                        event_time = date_tag.text.strip() if date_tag else ""
 
                         location_tag = soup_detailed.find('span', id=lambda value: value and 'Location' in value)
                         event_location = location_tag.text.strip() if location_tag else ""
@@ -84,7 +84,7 @@ async def mytauranga():
                             "event_description": event_description,
                             "event_category": event_category,
                             "event_location": event_location,
-                            "event_time": event_date,
+                            "event_time": event_time,
                             "event_imgurl": event_imgurl,
                             "json_data": json_data
                         }).execute()
