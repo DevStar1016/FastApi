@@ -4,7 +4,7 @@ import requests
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 from supabase import create_client
-from API.Httpclient import post_event_data
+from API.Httpclient import fetch_event_data
 import json
 import os
 

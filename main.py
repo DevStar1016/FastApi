@@ -17,6 +17,7 @@ from visit.nzso import nzso
 from visit.mytauranga import mytauranga
 from visit.jazz import jazz
 from visit.atc import atc
+from visit.comedyfestival import comedyfestival
 # -------- END --------
 
 scheduler = BackgroundScheduler()
@@ -52,7 +53,8 @@ async def cronjob():
     # await nzso()
     # await mytauranga()
     # await jazz()
-    await atc()
+    # await atc()
+    await comedyfestival()
 
 
 if __name__ == "__main__":
