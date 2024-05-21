@@ -40,8 +40,7 @@ async def atc():
             event_imgurl = target_url + event['TileImageUrl']
             event_category = ""
             if len(event['Tags']) > 0:
-                for tag in event["Tags"]:
-                    event_category = event_category + tag['Name']
+                event_category = ','.join(event['Tags'])
             event_date = event['PerformanceDates'][0] if len(event['PerformanceDates']) > 0 else ""
             event_location = event['Company']['Name']
             detailed_url = target_url + event['Url']
