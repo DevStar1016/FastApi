@@ -15,6 +15,8 @@ from visit.eventfinda import eventfinda
 from visit.undertheradar import undertheradar
 from visit.nzso import nzso
 from visit.mytauranga import mytauranga
+from visit.jazz import jazz
+# -------- END --------
 
 scheduler = BackgroundScheduler()
 app = FastAPI()
@@ -36,7 +38,7 @@ events = []
 # HTTP Request
 @app.get('/events/{target_id}')
 def retrieve_event(target_id: str):
-    print('sssssss-', target_id, "----", datetime.now())
+    print('target_id', target_id, "----", datetime.now())
     response = supabase.from_('Event').select('event_title, event_category, event_description, event_location, event_imgurl, event_time').eq("target_id", target_id).execute()
     return response
 
@@ -47,7 +49,8 @@ async def cronjob():
     # await eventfinda()
     # await undertheradar()
     # await nzso()
-    await mytauranga()
+    # await mytauranga()
+    await jazz()
 
 
 if __name__ == "__main__":
