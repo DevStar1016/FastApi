@@ -14,7 +14,7 @@ load_dotenv()
 supabase: Client = create_client(os.getenv('SUPABASE_URL'), os.getenv('SUPABASE_KEY')) # type: ignore
 
 
-async def visitperth():
+async def get_events_from_visitperth():
     async with aiohttp.ClientSession() as session:
         res_data = await fetch_event_data(session, Server_API_URL + "e={}&o=EventNextDate%2CAscending".format(0))
         total_count = res_data["Count"] if res_data else 0

@@ -12,7 +12,7 @@ supabase = create_client(os.getenv('SUPABASE_URL'), os.getenv('SUPABASE_KEY')) #
 
 Server_API_URL = "https://www.eventfinda.co.nz/whatson/events/new-zealand"
 
-async def eventfinda():
+async def get_events_from_eventfinda():
     async with aiohttp.ClientSession() as session:
         async with session.get(Server_API_URL) as response:
             res_data = await response.read()

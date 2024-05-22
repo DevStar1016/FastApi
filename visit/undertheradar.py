@@ -12,7 +12,7 @@ supabase = create_client(os.getenv('SUPABASE_URL'), os.getenv('SUPABASE_KEY')) #
 
 Server_API_URL = 'https://www.undertheradar.co.nz/panels/shows/showPanelListAjax.php?offset=0&limit=5000&regionID=&historyUrl=/utr/gig_guide'
 
-async def undertheradar():
+async def get_events_from_undertheradar():
     async with aiohttp.ClientSession() as session:
         async with session.get(Server_API_URL) as response:
             res_data = await response.read()

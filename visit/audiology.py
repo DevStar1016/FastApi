@@ -33,6 +33,6 @@ headers = {
 
 
 
-async def audiology():
+async def get_events_from_audiology():
     response = requests.post(url=Server_API_URL, json=json_payload)
     print(f'response--------------', response.status_code)

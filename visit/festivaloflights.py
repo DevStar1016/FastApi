@@ -15,7 +15,7 @@ Server_API_URL = "https://www.festivaloflights.nz/Umbraco/Api/WhatsOnEvent/Toggl
 
 headers = { 'Content-Type': 'application/json' }
     
-async def festivaloflights():
+async def get_events_from_festivaloflights():
     target_id = 'festivaloflights'
     target_url = 'https://www.festivaloflights.nz'
     

@@ -16,7 +16,7 @@ supabase: Client = create_client(os.getenv('SUPABASE_URL'), os.getenv('SUPABASE_
 payload_params = "analytics=false&facets=%5B%22event_season.title%22%2C%22venue_locations.title%22%5D&filters=collection_handle%3Aevents%20AND%20published%3Atrue%20AND%20private%3Afalse&highlightPostTag=__%2Fais-highlight__&highlightPreTag=__ais-highlight__&hitsPerPage=12&maxValuesPerFacet=100&page={}&sortFacetValuesBy=alpha&tagFilters="
 
 
-async def nzso():
+async def get_events_from_nzso():
     for index in range(0, 2):
         params = payload_params.format(index)
         payload = json.dumps({
