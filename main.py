@@ -22,6 +22,7 @@ from visit.festivaloflights import get_events_from_festivaloflights
 from visit.taupowinterfestival import get_events_from_taupowinterfestival
 from visit.aaaticketing import get_events_from_aaaticketing
 from visit.audiology import get_events_from_audiology
+from visit.humanitix import get_events_from_humanitix
 from visit.whakatance import get_events_from_whakatance
 # -------- END --------
 
@@ -54,7 +55,8 @@ async def cronjob():
     # await get_events_from_taupowinterfestival()
     # await get_events_from_aaaticketing()
     # await get_events_from_audiology()
-    await get_events_from_whakatance
+    get_events_from_humanitix()
+    # get_events_from_whakatance()
 
 if __name__ == "__main__":
     print('mode:', os.getenv('mode'))
