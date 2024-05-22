@@ -12,7 +12,7 @@ supabase = create_client(os.getenv('SUPABASE_URL'), os.getenv('SUPABASE_KEY')) #
 
 Server_API_URL = 'https://www.taupowinterfestival.co.nz/all-events'
 
-async def taupowinterfestival():
+async def get_events_from_taupowinterfestival():
 
     async with aiohttp.ClientSession() as session:
         async with session.get(Server_API_URL) as response:

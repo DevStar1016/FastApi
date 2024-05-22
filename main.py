@@ -10,18 +10,19 @@ import uvicorn
 import threading
 
 # import each scraping function for all sites.
-from visit.visitperth import visitperth
-from visit.eventfinda import eventfinda
-from visit.undertheradar import undertheradar
-from visit.nzso import nzso
-from visit.mytauranga import mytauranga
-from visit.jazz import jazz
-from visit.atc import atc
-from visit.comedyfestival import comedyfestival
-from visit.festivaloflights import festivaloflights
-from visit.taupowinterfestival import taupowinterfestival
-from visit.aaaticketing import aaaticketing
-from visit.audiology import audiology
+from visit.visitperth import get_events_from_visitperth
+from visit.eventfinda import get_events_from_eventfinda
+from visit.undertheradar import get_events_from_undertheradar
+from visit.nzso import get_events_from_nzso
+from visit.mytauranga import get_events_from_mytauranga
+from visit.jazz import get_events_from_jazz
+from visit.atc import get_events_from_atc
+from visit.comedyfestival import get_events_from_comedyfestival
+from visit.festivaloflights import get_events_from_festivaloflights
+from visit.taupowinterfestival import get_events_from_taupowinterfestival
+from visit.aaaticketing import get_events_from_aaaticketing
+from visit.audiology import get_events_from_audiology
+from visit.whakatance import get_events_from_whakatance
 # -------- END --------
 
 scheduler = BackgroundScheduler()
@@ -29,17 +30,7 @@ app = FastAPI()
 load_dotenv()
 supabase: Client = create_client(os.getenv('SUPABASE_URL'), os.getenv('SUPABASE_KEY')) # type: ignore
 
-class Event(BaseModel):
-    target_url: str
-    target_id: str
-    event_title:str
-    event_description: str
-    event_category: str
-    event_location: str
-    event_imgurl: str
-    event_time: str
-    
-events = []
+
 
 # HTTP Request
 @app.get('/events/{target_id}')
@@ -51,18 +42,19 @@ def retrieve_event(target_id: str):
 
 # CronJob function
 async def cronjob():
-    # await visitperth()
-    # await eventfinda()
-    # await undertheradar()
-    # await nzso()
-    # await mytauranga()
-    # await jazz()
-    # await atc()
-    # await comedyfestival()
-    # await festivaloflights()
-    # await taupowinterfestival()
-    # await aaaticketing()
-    await audiology()
+    # await get_events_from_visitperth()
+    # await get_events_from_eventfinda()
+    # await get_events_from_undertheradar()
+    # await get_events_from_nzso()
+    # await get_events_from_mytauranga()
+    # await get_events_from_jazz()
+    # await get_events_from_atc()
+    # await get_events_from_comedyfestival()
+    # await get_events_from_festivaloflights()
+    # await get_events_from_taupowinterfestival()
+    # await get_events_from_aaaticketing()
+    # await get_events_from_audiology()
+    await get_events_from_whakatance
 
 if __name__ == "__main__":
     print('mode:', os.getenv('mode'))

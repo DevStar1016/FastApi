@@ -22,7 +22,7 @@ payload = json.dumps({
     "Company": 1116, "Tag": None, "SpecificDate": None, "ShowTimeScale": None, "CurrentEvents": True, "PagingUrlBase":"","IsATCSite":True
 })
 
-async def atc():
+async def get_events_from_atc():
     response = requests.post(Atc_API_URL, data=payload, headers=headers)
     res_data = response.json()
     events = res_data['Data']['Shows']

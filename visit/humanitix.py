@@ -1,13 +1,15 @@
-"""
-https://humanitix.com/
-
-https://humanitix.com/_next/data/WYUIRtHouBix1NmpPSMFn/ca/search.json?page=1
-
-"""
 import urllib3
 import json
 from bs4 import BeautifulSoup
 import re
+
+
+target_url = "https://humanitix.com"
+target_id = 'humanitix'
+
+"""
+https://humanitix.com/_next/data/WYUIRtHouBix1NmpPSMFn/ca/search.json?page=1
+"""
 
 def get_events_from_humanitix_com():
 	result = []

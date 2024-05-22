@@ -13,7 +13,7 @@ supabase = create_client(os.getenv('SUPABASE_URL'), os.getenv('SUPABASE_KEY')) #
 
 Server_API_URL = 'https://www.comedyfestival.co.nz/find-a-show?start=45'
 
-async def comedyfestival():
+async def get_events_from_comedyfestival():
     async with aiohttp.ClientSession() as session:
         async with session.get(Server_API_URL) as response:
             res_data = await response.read()

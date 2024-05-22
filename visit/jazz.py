@@ -12,7 +12,7 @@ supabase = create_client(os.getenv('SUPABASE_URL'), os.getenv('SUPABASE_KEY')) #
 
 Server_API_URL = "https://jazz.org.nz/2024-events/"
 
-async def jazz():
+async def get_events_from_jazz():
     async with aiohttp.ClientSession() as session:
         async with session.get(Server_API_URL) as response:
             res_data = await response.read()
