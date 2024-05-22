@@ -19,6 +19,7 @@ from visit.jazz import jazz
 from visit.atc import atc
 from visit.comedyfestival import comedyfestival
 from visit.festivaloflights import festivaloflights
+from visit.taupowinterfestival import taupowinterfestival
 # -------- END --------
 
 scheduler = BackgroundScheduler()
@@ -56,7 +57,8 @@ async def cronjob():
     # await jazz()
     # await atc()
     # await comedyfestival()
-    await festivaloflights()
+    # await festivaloflights()
+    await taupowinterfestival()
 
 if __name__ == "__main__":
     print('mode:', os.getenv('mode'))
