@@ -21,6 +21,7 @@ from visit.comedyfestival import comedyfestival
 from visit.festivaloflights import festivaloflights
 from visit.taupowinterfestival import taupowinterfestival
 from visit.aaaticketing import aaaticketing
+from visit.audiology import audiology
 # -------- END --------
 
 scheduler = BackgroundScheduler()
@@ -60,7 +61,8 @@ async def cronjob():
     # await comedyfestival()
     # await festivaloflights()
     # await taupowinterfestival()
-    await aaaticketing()
+    # await aaaticketing()
+    await audiology()
 
 if __name__ == "__main__":
     print('mode:', os.getenv('mode'))
