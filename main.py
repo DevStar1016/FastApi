@@ -24,6 +24,9 @@ from visit.aaaticketing import get_events_from_aaaticketing
 from visit.audiology import get_events_from_audiology
 from visit.humanitix import get_events_from_humanitix
 from visit.whakatance import get_events_from_whakatance
+from visit.crankworx import get_events_from_crankworx
+from visit.wellingtonnz import get_events_from_wellingtonnz
+from visit.heartofthecity import get_events_from_heartofthecity
 from visit.Rotoruanui import get_events_from_rotoruanui
 # -------- END --------
 
@@ -58,7 +61,6 @@ async def cronjob():
     # await get_events_from_audiology()
     # get_events_from_humanitix()
     # get_events_from_whakatance()
-    get_events_from_rotoruanui()
 
 if __name__ == "__main__":
     print('mode:', os.getenv('mode'))

@@ -23,7 +23,6 @@ async def get_events_from_festivaloflights():
     response = await post_event_data(Server_API_URL, headers, payload)
     soup = BeautifulSoup(response['pagination'], 'lxml')
     pagination_buttons = soup.find_all('button', class_='pagination-button')
-    print('page_counts------', len(pagination_buttons))
     
     for page_number in range(0, len(pagination_buttons)-1):
         payload = json.dumps({
