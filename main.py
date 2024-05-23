@@ -28,6 +28,7 @@ from visit.crankworx import get_events_from_crankworx
 from visit.wellingtonnz import get_events_from_wellingtonnz
 from visit.heartofthecity import get_events_from_heartofthecity
 from visit.Rotoruanui import get_events_from_rotoruanui
+from visit.hawkesbaynz import get_events_from_hawkesbaynz
 # -------- END --------
 
 scheduler = BackgroundScheduler()
@@ -61,6 +62,7 @@ async def cronjob():
     # await get_events_from_audiology()
     # get_events_from_humanitix()
     # get_events_from_whakatance()
+   await get_events_from_hawkesbaynz()
 
 if __name__ == "__main__":
     print('mode:', os.getenv('mode'))
