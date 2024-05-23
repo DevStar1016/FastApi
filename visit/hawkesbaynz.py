@@ -1,72 +1,80 @@
-import requests
-import json
+import aiohttp
+import asyncio
 from bs4 import BeautifulSoup
 from Utils.supa_base import check_duplicate_data, store_events_data
 
-target_url = 'https://www.hawkesbaynz.com'
+
 target_id = 'hawkesbaynz'
+target_url = 'https://www.hawkesbaynz.com'
 Server_API_URL = "https://www.hawkesbaynz.com/whats-on/events/the-whats-on-guide/"
 
 async def get_events_from_hawkesbaynz():
-    page = 21
-    payload = { 'view_name': 'sector_sitewide_search','view_display_id': 'page_4', 'view_args': '85','page': 0}
-    while True:
-        result = []
-        payload['page'] = page
-        # async with aiohttp.ClientSession(headers=headers) as session:
-        #     async with session.post(url, data=payload) as response:
-        raw = requests.post(Server_API_URL, data=payload)
-        if raw.status_code == 200:
-            res = raw.json()
-            temp = res[-1] if len(res) else None
-            soup = BeautifulSoup(temp['data'], 'lxml')
-            articles = soup.find_all('li', class_='grid__item')
-            if not len(articles): break
-            for article in articles:
-                #title, description, img, time
-                content_tag = article.find('div', class_='slat__content')
-                event_title = content_tag.find('h4', class_='slat__title').text.strip() if content_tag else ""
-                event_time = article.find('div', class_='slat__date').text.strip()
-                
-                if not check_duplicate_data({'target_id': target_id, 'event_title':event_title, "event_time": event_time}):
-                    temp1 = article.find('div', class_='field-name-field-summary')
-                    event_description = temp1.text.strip() if temp1 else ""
-                    img_tag = article.find('source')
-                    event_imgurl = target_url + img_tag.get('data-srcset') if img_tag else ""
-                    if event_imgurl == '': break
-                    
-                    detailed_url = target_url + article.find('a', class_='field-group-link').get('href')
-                    raw1 = requests.get(detailed_url)
-                    if raw1.status_code == 200:
-                        soup1 = BeautifulSoup(raw1.content, 'lxml')
-                        #script
-                        json_data = None
-                        
-                        #location
-                        location_tag = soup1.find('div', class_='field-name-dynamic-token-fieldnode-custom-location-with-map-link')
-                        event_location = location_tag.text.strip() if location_tag else ""
-                        event_category = 'Event'
-                        
-                        result.append({
-                            "target_id": target_id,
-                            "target_url": target_url,
-                            "event_title": event_title,
-                            "event_description": event_description,
-                            "event_category": event_category,
-                            "event_location": event_location,
-                            "event_time": event_time,
-                            "event_imgurl": event_imgurl,
-                            "json_data": json_data
-                        })
-                    else: break
-                else: continue
-        else: break
-        print(f'page----{page}----result: {len(result)}')
-        page += 1
-        store_events_data(result)
+    async with aiohttp.ClientSession() as session:
+        async with session.get(Server_API_URL) as response:
+            result = []
+            res_data = await response.read()
+            soup = BeautifulSoup(res_data, 'lxml')
+            card_tags = soup.find_all('div', {'itemtype': 'http://schema.org/Event'})
+            total_count = len(card_tags) if card_tags else 0
 
-        
-    return result
+            if not total_count: return
+
+            for index in range(0, len(card_tags)):
+                card_tag = card_tags[index]
+                image = card_tag.find('div', class_='image')
+                a_tag = image.find('a')
+                detail_url = target_url + a_tag.get('href')
+                event_imgurl = a_tag.get('data-src') if a_tag else ""
+                date_tag = image.find('div', class_='dates')
+                event_time = date_tag.text if date_tag else ""
+
+                title = card_tag.find('div', class_='title')
+                title_tag = title.find('div', class_='listingName')
+                event_title = title_tag.text if title_tag else ""
+
+                print(f'-------{event_title}--------')
+
+                if event_title == '': continue
+
+                label = title.find('div', class_='cat-events')
+                event_category = label.text if label else ""
+                hidden = title.find('div', class_='hidden')
+                date1 = hidden.find('span', {'itemprop': 'startDate'})
+                startDate = date1.get('content') if date1 else None
+                event_time = date1.get('content') if date1 else ""
+                date2 = hidden.find('span', {'itemprop': 'endDate'})
+                endDate = date2.get('content') if date2 else None
+
+                if startDate == None or endDate == None:
+                    json_data = None
+                
+                location = hidden.find('div', {'itemprop': 'location'})
+                address = location.find('meta', {'itemprop': 'address'})
+                event_location = address.get('content') if address else ""
+                
+                description = hidden.find('span', {'itemprop': 'description'})
+                event_description = description.text.strip() if description else ""
+
+                if not check_duplicate_data({'target_id': target_id, 'event_title':event_title}):
+                    obj = {
+                        'target_id': target_id,
+                        'target_url': target_url,
+                        'event_title': event_title,
+                        'event_description': event_description,
+                        'event_category': event_category,
+                        'event_time': event_time,
+                        'event_imgurl': event_imgurl,
+                        'event_location': event_location,
+                        'json_data': {'startDate': startDate, 'endDate': endDate}
+                    }
+                    result.append(obj)
+                else:
+                    continue
+            store_events_data(result)
+            return result
+    
 
 if __name__ == '__main__':
-	print(len(get_events_from_hawkesbaynz()))
+    asyncio.run(get_events_from_eventfinda())
+
+# asyncio.run(eventfinda())
