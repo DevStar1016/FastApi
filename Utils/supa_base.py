@@ -32,5 +32,6 @@ def store_events_data(events_data: List[Dict]):
         code, count = supabase.table('Event').insert(events_data).execute()
     except Exception as e:
         raise e
-    # end try
+        return 1
     return 1
+    # end try
