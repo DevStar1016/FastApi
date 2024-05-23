@@ -26,6 +26,7 @@ from visit.humanitix import get_events_from_humanitix
 from visit.whakatance import get_events_from_whakatance
 from visit.crankworx import get_events_from_crankworx
 from visit.wellingtonnz import get_events_from_wellingtonnz
+from visit.heartofthecity import get_events_from_heartofthecity
 # -------- END --------
 
 scheduler = BackgroundScheduler()
@@ -60,7 +61,8 @@ async def cronjob():
     # get_events_from_humanitix()
     # get_events_from_whakatance()
     # await get_events_from_crankworx()
-    await get_events_from_wellingtonnz()
+    # await get_events_from_wellingtonnz()
+    await get_events_from_heartofthecity()
 
 if __name__ == "__main__":
     print('mode:', os.getenv('mode'))
