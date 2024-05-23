@@ -24,6 +24,7 @@ from visit.aaaticketing import get_events_from_aaaticketing
 from visit.audiology import get_events_from_audiology
 from visit.humanitix import get_events_from_humanitix
 from visit.whakatance import get_events_from_whakatance
+from visit.crankworx import get_events_from_crankworx
 # -------- END --------
 
 scheduler = BackgroundScheduler()
@@ -55,8 +56,9 @@ async def cronjob():
     # await get_events_from_taupowinterfestival()
     # await get_events_from_aaaticketing()
     # await get_events_from_audiology()
-    get_events_from_humanitix()
+    # get_events_from_humanitix()
     # get_events_from_whakatance()
+    await get_events_from_crankworx()
 
 if __name__ == "__main__":
     print('mode:', os.getenv('mode'))

@@ -46,7 +46,7 @@ def get_events_from_humanitix():
 
                     pattern = r',classification:\{type:".*?",category:"(.*?)",subcategory:".*?"\},'
                     category_search = re.search(pattern, str(raw.data))
-                    category = category_search.group(1) if category_search else "Unknown"
+                    category = category_search.group(1) if category_search else ""
                     #checking duplicate of datas
                     data_exists = supabase.table("Event") \
                         .select("target_url, event_title") \
