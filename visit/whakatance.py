@@ -8,11 +8,10 @@ target_id = 'whakatance'
 Server_API_URL = "https://www.whakatane.com/views/ajax?_wrapper_format=drupal_ajax"
 
 def get_events_from_whakatance():
-    
+    result = []
     page = 0
     payload = { 'view_name': 'events_list_filtered_all','view_display_id': 'block_all','page': 0}
     while True:
-        result = []
         payload['page'] = page
         raw = requests.post(Server_API_URL, data=payload)
         if raw.status_code == 200:
@@ -50,22 +49,23 @@ def get_events_from_whakatance():
                         event_category = 'Event'
                         
                         result.append({
-                            "id": target_id,
-                            "url": target_url,
-                            "title": event_title,
-                            "description": event_description,
-                            "category": event_category,
-                            "location": event_location,
-                            "time": event_time,
-                            "imgurl": event_imgurl,
-                            "data": json_data
+                            "target_id": target_id,
+                            "target_url": target_url,
+                            "event_title": event_title,
+                            "event_description": event_description,
+                            "event_category": event_category,
+                            "event_location": event_location,
+                            "event_time": event_time,
+                            "event_imgurl": event_imgurl,
+                            "json_data": json_data
                         })
                     else: break
                 else: continue
         else: break
         print(f'page----{page}----result: {len(result)}')
-        store_events_data(result)
         page += 1
+        
+    store_events_data(result)
     return result
 
 if __name__ == '__main__':

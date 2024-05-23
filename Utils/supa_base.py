@@ -28,20 +28,9 @@ def store_events_data(events_data: List[Dict]):
     """
     :param events_data: A list of dictionaries, where each dictionary contains event data.
     """
-    for event in events_data:
-        db_event = {
-            "target_id": event["id"],
-            "target_url": event["url"],
-            "event_title": event["title"],
-            "event_description": event['description'],
-            "event_category": event["category"],
-            "event_location": event["location"],
-            "event_time": event["time"],
-            "event_imgurl": event["imgurl"],
-            "json_data": event["data"]
-        }
-        
-        print(f"-------{event['title']}-------")
-        code, count = supabase.table('Event').insert(db_event).execute()
-        
+    try:
+        code, count = supabase.table('Event').insert(events_data).execute()
+    except Exception as e:
+        raise e
+    # end try
     return 1

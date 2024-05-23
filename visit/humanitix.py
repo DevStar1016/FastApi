@@ -1,79 +1,85 @@
+"""
+https://humanitix.com/
+
+https://humanitix.com/_next/data/WYUIRtHouBix1NmpPSMFn/ca/search.json?page=1
+
+"""
 import urllib3
 import json
 from bs4 import BeautifulSoup
 import re
-from Utils.supa_base import store_events_data, check_duplicate_data
+from supabase import create_client, Client
+from dotenv import load_dotenv
+from API.Httpclient import fetch_event_data
+from Utils.supa_base import store_events_data
+import os
 
-# Initialize urllib3's PoolManager
-http = urllib3.PoolManager()
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)  # To disable warnings for unverified HTTPS requests
-
-target_url = "https://humanitix.com"
-target_id = 'humanitix'
+load_dotenv()
+supabase: Client = create_client(os.getenv('SUPABASE_URL'), os.getenv('SUPABASE_KEY')) # type: ignore
 
 def get_events_from_humanitix():
-    page = 0
     result = []
+
+    page = 0
     while True:
-        url = f'https://humanitix.com/_next/data/WYUIRtHouBix1NmpPSMFn/ca/search.json?page={page}'
-        raw = http.request('GET', url)
-
+        raw = urllib3.request('GET', f'https://humanitix.com/_next/data/WYUIRtHouBix1NmpPSMFn/ca/search.json?page={page}')
         if raw.status == 200:
-            parsed = json.loads(raw.data.decode('utf-8')).get('pageProps', {}).get('initialEvents', [])
-            if not parsed:
-                break
+            parsed = json.loads(raw.data).get('pageProps', {}).get('initialEvents', [])
             
+            # Check if fetching same data
+            index = len(result) - 1
+            has_same_id = False
+            while index >= 0:
+                if result[index]['iid'] == parsed[0]['_id']:
+                    has_same_id = True
+                    break
+                index -= 1
+            if has_same_id:
+                break
+
+            # Parse and push data
             for item in parsed:
-                # Define event_title and event_time using the appropriate data from 'item'
-                event_title = item.get('name')
-                event_time = item.get('date', {}).get('startDate')
+                raw = urllib3.request('GET', f"https://events.humanitix.com/{item['slug']}")
+                if raw.status == 200:
+                    soup = BeautifulSoup(raw.data, 'html.parser')
+                    description = soup.find('div', class_='RichContent').get_text()
 
-                event_url = f'https://events.humanitix.com/{item["slug"]}'
-                raw_event_page = http.request('GET', event_url)
+                    pattern = r',classification:\{type:".*?",category:"(.*?)",subcategory:".*?"\},'
+                    category_search = re.search(pattern, str(raw.data))
+                    category = category_search.group(1) if category_search else "Unknown"
+                    #checking duplicate of datas
+                    data_exists = supabase.table("Event") \
+                        .select("target_url, event_title") \
+                        .eq("event_title", item['name']) \
+                        .eq("target_id", item['_id']) \
+                        .execute()
 
-                if raw_event_page.status == 200:
-                    soup = BeautifulSoup(raw_event_page.data, 'html.parser')
-                    description = soup.find('div', class_='RichContent').get_text(strip=True)
-
-                    pattern = re.compile(r'classification:\{type:".*?",category:"(.*?)",subcategory:".*?"\},')
-                    search_result = pattern.search(str(raw_event_page.data))
-
-                    category = search_result.group(1) if search_result else 'N/A'
-
-                    json_data = {
-                        'startDate': item.get('date', {}).get('startDate'),
-                        'endDate': item.get('date', {}).get('endDate')
-                    }
-                    
-                    if not check_duplicate_data({
-                        'target_id': target_id,
-                        'event_title': event_title,
-                        'event_time': event_time,
-                        'event_category': category
-                    }):
+                    if len(data_exists.data) == 0:
                         result.append({
-                            'id': item.get('_id'),
-                            'url': target_url,
-                            'title': event_title,
-                            'description': description,
-                            'category': category,
-                            'time': event_time,
-                            'imgurl': item.get('bannerImage', {}).get('url'),
-                            'location': item.get('eventLocation', {}).get('address'),
-                            'data': json_data
+						    'iid': item['_id'],
+                            'target_id': 'humanitix',
+                            'target_url': 'https://humanitix.com',
+                            'event_title': item['name'],
+                            'event_description': description,
+                            'event_category': category,
+                            'event_time': item.get('date', {}).get('startDate'),
+                            'event_imgurl': item.get('bannerImage', {}).get('url'),
+                            'event_location': item.get('eventLocation', {}).get('address'),
+                            'json_data': {
+                                'startDate': item.get('date', {}).get('startDate'),
+                                'endDate': item.get('date', {}).get('endDate')
+                            }
                         })
-                    else:
-                        print('--------------------------------')
-                        continue
+                else:
+                    break
         else:
             break
-
-        print(f'page----{page}----result: {len(result)}')
+		
+        print(f'------page: {page}-- result: {len(result)}----')
         page += 1
-        
-    store_events_data(result)
+
+    store_events_data(result)	
     return result
 
 if __name__ == '__main__':
-    events = get_events_from_humanitix()
-    print(len(events))
+    print(len(get_events_from_humanitix()))
