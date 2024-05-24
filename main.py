@@ -34,6 +34,7 @@ from visit.dunedinnz import get_events_from_dunedinnz
 from visit.northlandnz import get_events_from_northlandnz
 from visit.livenation import get_events_from_livenation
 from visit.frontiertouring import get_events_from_frontiertouring
+from visit.voicesnz import get_events_from_voicesnz
 # -------- END --------
 
 scheduler = BackgroundScheduler()
@@ -72,8 +73,9 @@ async def cronjob():
     # get_events_from_dunedinnz()
     # get_events_from_northlandnz()
     # get_events_from_livenation()
-    get_events_from_frontiertouring()
-    
+    # get_events_from_frontiertouring()
+    get_events_from_voicesnz()
+
 if __name__ == "__main__":
     print('mode:', os.getenv('mode'))
 
