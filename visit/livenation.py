@@ -19,7 +19,7 @@ def get_events_from_livenation():
     genreList = json.loads(genreList_content)
     for genre_item in genreList:
         res1 = requests.get(Server_API_URL.format(page, genre_item['key'])).text
-        raw1 = BeautifulSoup(res, 'lxml')
+        raw1 = BeautifulSoup(res1, 'lxml')
         event_category = genre_item['key']
     
         results = raw1.find('h3', class_='allevents__results')
