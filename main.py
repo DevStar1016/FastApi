@@ -31,6 +31,7 @@ from visit.Rotoruanui import get_events_from_rotoruanui
 from visit.hawkesbaynz import get_events_from_hawkesbaynz
 from visit.venuesotautahi import get_events_from_venuesotautahi
 from visit.dunedinnz import get_events_from_dunedinnz
+from visit.northlandnz import get_events_from_northlandnz
 # -------- END --------
 
 scheduler = BackgroundScheduler()
@@ -66,7 +67,8 @@ async def cronjob():
     # get_events_from_whakatance()
     # await get_events_from_hawkesbaynz()
     # await get_events_from_venuesotautahi()
-    get_events_from_dunedinnz()
+    # get_events_from_dunedinnz()
+    get_events_from_northlandnz()
 
 if __name__ == "__main__":
     print('mode:', os.getenv('mode'))
