@@ -32,7 +32,6 @@ async def get_events_from_aucklandlive():
                 description = attribute['description']
                 soup1 = BeautifulSoup(description, 'lxml')
                 event_description = soup1.get_text(separator=' ', strip=True)
-                print(f'-------{event_title}---')
                 if check_duplicate_data({'target_id': target_id, 'event_title': event_title}):
                     print(f'title----{event_title}----', 0)
                     continue
@@ -64,7 +63,6 @@ async def get_events_from_aucklandlive():
                         else: continue
                     result_page.append(dict1)
                     print(f'-----title-----{dict1['event_title']}', 1)
-                    print('target_id, event_title', target_id==dict1['target_id'], event_title==dict1['event_title'])
                 else: continue
             print(f'length----{len(result_page)}')
             store_events_data(result_page)
