@@ -48,9 +48,15 @@ supabase: Client = create_client(os.getenv('SUPABASE_URL'), os.getenv('SUPABASE_
 
 # HTTP Request
 @app.get('/events/{target_id}')
-def retrieve_event(target_id: str):
+def retrieve_event(target_id: str, offset: int, limit:int):
     print('target_id', target_id, "----", datetime.now())
-    response = supabase.from_('Event').select('event_title, event_category, event_description, event_location, event_imgurl, event_time').eq("target_id", target_id).execute()
+    response = supabase.from_('Event').select('event_title, event_category, event_description, event_location, event_imgurl, event_time').eq("target_id", target_id).range(from_= offset, to= offset+limit).execute()
+    return response
+
+@app.get('/events/get_{target_id}')
+def retrieve_event(target_id: str, offset: int, limit:int):
+    print('target_id', target_id, "----", datetime.now())
+    response = supabase.from_('Event1').select('event_title, event_category, event_description, event_location, event_imgurl, event_time').eq("target_id", target_id).range(from_= offset, to= offset+limit).execute()
     return response
 
 
