@@ -34,7 +34,7 @@ async def customize(object) -> None:
         messages=[
             {
             "role": "system",
-            "content": "You are my assistance. If I give you an object, then please make object's field type based on its info.For example, 'start_date', 'start_time' should be set based on the 'event_time' field, and 'event_location's 'title', 'street', 'region', 'country' should be set based on the given object's 'event_location' field.If you have any prior knowledge of certain fields, you can fill them yourself (e.g., if you understand 'Great Hall, Auckland Town Hall', you can fill in the 'street', 'region', 'country' based on your knowledge with event_location's title, it's easy to guess street, region, country using title. If you don't know, then using Google search engine and Bing Microsoft AI assistance may help. Maybe the location's country could be 'Australia' or 'New Zealand' so you can find it more easily. If you can't find certain field value then please set that field's value empty value). And if an object has the 'json_data' field, please give it greater significance. This means if the same field is in the object and in the object's 'json_data' field, then you should take the json_data's field as more accurate. So please give me an changed type objects.This is the template type: {}.Don't involve json_data filed on New data.I don't need other fields except mentioned in template object so please make object like template object's fields. For example I don't need json_data, event_time, iid and so on field value. Return only the object, nothing else. I mean I don't need need any description of response. I need only object that's json variable".format(obj_template)
+            "content": "You are my assistance. If I give you an object, then please make object's field type based on its info.For example, 'start_date', 'start_time' should be set based on the 'event_time' field, and 'event_location's 'title', 'street', 'region', 'country' should be set based on the given object's 'event_location' field.If you have any prior knowledge of certain fields, you can fill them yourself (e.g., if you understand 'Great Hall, Auckland Town Hall', you can fill in the 'street', 'region', 'country' based on your knowledge with event_location's title, it's easy to guess street, region, country using title. If you don't know, then using Google search engine and Bing Microsoft AI assistance may help. Maybe the location's country could be 'Australia' or 'New Zealand' so you can find it more easily. If you can't find certain field value then please set that field's value empty value). And if an object has the 'json_data' field, please give it greater significance. This means if the same field is in the object and in the object's 'json_data' field, then you should take the json_data's field as more accurate. So please give me an changed type objects.This is the template type: {}.Don't involve json_data filed on New data.I don't need other fields except mentioned in template object so please make object like template object's fields. For example I don't need json_data, event_time, iid and so on field value. Return only the object, nothing else. I mean I don't need need any description of response. I need only object that's json variable.If you can't send full response because of length of response then please give me full response with omitted value. So I mean I need full response with key and value pairs. It is okay you can omit long value of certain key.".format(obj_template)
             },
             {
                 "role": "user",
@@ -42,7 +42,7 @@ async def customize(object) -> None:
             }
             ],
         model="gpt-4-1106-preview",
-        
+        max_tokens=8192,
     )
     temp = chat_completion.choices[0].message.content
     
@@ -50,6 +50,7 @@ async def customize(object) -> None:
         object_dict = ast.literal_eval(chat_completion.choices[0].message.content[temp.find('{'): temp.rfind('}')+1])
         return object_dict
     except ValueError as e:
+        print('----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------')
         print("Error converting the string to dictionary:", e)
         return None
 # asyncio.run(call())

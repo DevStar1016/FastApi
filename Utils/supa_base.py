@@ -18,10 +18,10 @@ def check_duplicate_data(criteria: dict) -> bool:
     
     # Build the query based on the criteria
     for field, value in criteria.items():
-        query = query.eq(field, value)
+        query = query.eq(field, value.strip())
 
     results = query.execute()
-    return len(results.data) > 1
+    return len(results.data) > 0
 
 #store array of dict data in supabase
 def store_events_data(events_data: List[Dict]):
