@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
-from Utils.supa_base import check_duplicate_data, store_events_data
+from Utils.supa_base import check_duplicate_data, store_events_data, check_duplicate_data_async
+from Utils.open_ai import customize, customizable
 import json
 
 
@@ -8,7 +9,7 @@ Server_API_URL = "https://nzopera.com/whats-on/calendar/"
 target_id = 'nzopera'
 target_url = 'https://nzopera.com'
 
-def get_events_from_nzopera():
+async def get_events_from_nzopera():
     result = []
     res = requests.get(Server_API_URL).text
     raw = BeautifulSoup(res, 'lxml')
@@ -32,13 +33,11 @@ def get_events_from_nzopera():
         event_description = desc_ps[1].text.strip() if len(desc_ps) > 1 else desc_ps[0].text.strip()
 
         cont_list = content3.find_all('div', class_='gb-container')
-        print('lenght', len(cont_list))
         event_time = cont_list[1].text.strip()
         event_location = cont_list[2].text.strip()
-        print('cont_list[2]', cont_list[3])
         detail_url = cont_list[3].find('a').get('href')
 
-        if not check_duplicate_data({'target_id': target_id, 'event_title':event_title, "event_time": event_time, 'event_location': event_location}):
+        if not await check_duplicate_data_async({'target_id': target_id, 'event_title':event_title}):
         # if 1:
             raw_detail = requests.get(detail_url).text
             soup1 = BeautifulSoup(raw_detail, 'lxml')
@@ -55,8 +54,11 @@ def get_events_from_nzopera():
                 "event_imgurl": event_imgurl,
                 "json_data": json_data
             }
-            result.append(obj)
-            print(f'----{event_title}----', 1)
+            temp_obj = await customize(obj)
+            if temp_obj is not None:
+                card = customizable(temp_obj)
+                result.append(card)
+                print(f'----{event_title}----', 1)
         else: 
             print(f'-----{event_title}------', 0)
             continue  
