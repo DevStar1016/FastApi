@@ -34,7 +34,7 @@ async def customize(object) -> None:
         messages=[
             {
             "role": "system",
-            "content": "Provide an object and I'll update its fields according to the provided template:{}- `start_date` and `start_time` are derived from `event_time`.- `event_location` fields (`title`, `street`, `region`, `country`) are updated with known info or looked up if unknown.- Fields inside `json_data` are prioritized over top-level fields in case of duplication.- Exclude all fields not mentioned in the template object.- If response is too long, send keys with omitted values.No additional explanations needed, just the updated object.".format(obj_template)
+            "content": "Provide an object and I'll update its fields according to the provided template:{}- `start_date` and `start_time` are derived from `event_time`.- `event_location` fields (`title`, `street`, `region`, `country`) are updated with known info or looked up if unknown.- Fields inside `json_data` are prioritized over top-level fields in case of duplication.- Exclude all fields not mentioned in the template object.- If response is too long, send keys with omitted values.No additional explanations needed (e.x. '// Updated with assumed time' comments) , just the updated object. I don't need assumed data especially time. If any value of certain key is null or unknow, then fill empty string".format(obj_template)
             },
             {
                 "role": "user",
@@ -43,8 +43,10 @@ async def customize(object) -> None:
             ],
         model="gpt-4o",
         max_tokens=4096,
+        response_format={ "type": "json_object" }
     )
     temp = chat_completion.choices[0].message.content
+    print('temp ============================>', temp)
     
     try:
         object_dict = ast.literal_eval(chat_completion.choices[0].message.content[temp.find('{'): temp.rfind('}')+1])
@@ -54,3 +56,12 @@ async def customize(object) -> None:
         print("Error converting the string to dictionary:", e)
         return None
 # asyncio.run(call())
+
+def customizable(temp):
+    dict1 = {}
+    for key, value in temp.items():
+        if key in obj_template:
+            dict1[key] = value
+        else: continue
+        
+    return dict1

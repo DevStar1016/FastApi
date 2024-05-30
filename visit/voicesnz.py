@@ -2,7 +2,8 @@ import requests
 from bs4 import BeautifulSoup
 import os
 import aiohttp
-from Utils.supa_base import check_duplicate_data, store_events_data
+from Utils.supa_base import check_duplicate_data, store_events_data, check_duplicate_data_async
+from Utils.open_ai import customizable, customize
 import json
 
 
@@ -10,7 +11,7 @@ Server_API_URL = "https://www.voicesnz.com/event/auckland/"
 target_id = 'voicesnz'
 target_url = 'https://www.voicesnz.com'
 
-def get_events_from_voicesnz():
+async def get_events_from_voicesnz():
     result = []
     res = requests.get(Server_API_URL).text
     soup = BeautifulSoup(res, 'lxml')
@@ -28,7 +29,7 @@ def get_events_from_voicesnz():
         location = time.find_next('p')
         event_location = location.text.strip() if location else ""
 
-        if not check_duplicate_data({'target_id': target_id, 'event_title':event_title, "event_time": event_time, 'event_location': event_location}):
+        if not await check_duplicate_data_async({'target_id': target_id, 'event_title':event_title}):
             description = soup.find('div', id='event-info')
             event_description = description.text.strip() if description else ""
 
@@ -43,8 +44,11 @@ def get_events_from_voicesnz():
                 "event_imgurl": event_imgurl,
                 "json_data": json_data
             }
-            result.append(obj)
-            print(f'----{event_title}----', 1)
+            temp_obj = await customize(obj)
+            if temp_obj is not None:
+                card = customizable(temp_obj)
+                result.append(card)
+                print(f'----{event_title}----', 1)
         else: 
             print(f'-----{event_title}------', 0)
     store_events_data(result)
