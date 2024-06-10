@@ -1,13 +1,14 @@
-from fastapi import FastAPI, HTTPException, status, Query, Response
-from pydantic import BaseModel
+from fastapi import FastAPI, HTTPException, status, Query, Response # type: ignore
+from pydantic import BaseModel # type: ignore
 import os
-from supabase import create_client, Client
-from dotenv import load_dotenv
+from supabase import create_client, Client # type: ignore
+from dotenv import load_dotenv # type: ignore
 import asyncio
-from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.schedulers.background import BackgroundScheduler # type: ignore
 from datetime import datetime
-import uvicorn
+import uvicorn # type: ignore
 import threading
+from Utils.convert import convert_func
 
 # import each scraping function for all sites.
 from visit.visitperth import get_events_from_visitperth
@@ -36,6 +37,7 @@ from visit.livenation import get_events_from_livenation
 from visit.frontiertouring import get_events_from_frontiertouring
 from visit.voicesnz import get_events_from_voicesnz
 from visit.nzopera import get_events_from_nzopera
+from visit.aucklandlive import get_events_from_aucklandlive
 # -------- END --------
 
 scheduler = BackgroundScheduler()
@@ -47,11 +49,10 @@ supabase: Client = create_client(os.getenv('SUPABASE_URL'), os.getenv('SUPABASE_
 
 # HTTP Request
 @app.get('/events/{target_id}')
-def retrieve_event(target_id: str):
+def retrieve_event(target_id: str, offset: int, limit:int):
     print('target_id', target_id, "----", datetime.now())
-    response = supabase.from_('Event').select('event_title, event_category, event_description, event_location, event_imgurl, event_time').eq("target_id", target_id).execute()
+    response = supabase.from_('Event1').select('event_title, event_category, event_description, event_location, event_imgurl, start_date, start_time, end_date, end_time').eq("target_id", target_id).offset(offset).limit(limit).execute()
     return response
-
 
 # CronJob function
 async def cronjob():
@@ -74,20 +75,26 @@ async def cronjob():
     # get_events_from_dunedinnz()
     # get_events_from_northlandnz()
     # get_events_from_livenation()
-    # get_events_from_frontiertouring()
-    # get_events_from_voicesnz()
-    get_events_from_nzopera()
+    await get_events_from_frontiertouring()
+    # await get_events_from_voicesnz()
+    # await get_events_from_nzopera()
+    # await get_events_from_aucklandlive()
 
 if __name__ == "__main__":
+    load_dotenv()
     print('mode:', os.getenv('mode'))
 
-    if os.getenv('mode') == 'production':
+    if os.getenv('DEVELOP_MODE') == 'production':
         print('Running Cronjob')
         scheduler.add_job(cronjob, 'interval', minutes=60)
         scheduler.start()
-    else:
+    elif os.getenv('DEVELOP_MODE') == 'develop':
         print('Running Thread')
         thread = threading.Thread(target=lambda: asyncio.run(cronjob()))
         thread.start()
+    elif os.getenv('DEVELOP_MODE') == 'database':
+        success_count = asyncio.run(convert_func(target_id='frontiertouring')) # type: ignore
+        print(f'----success_count---{success_count}')
 
-    uvicorn.run('main:app', host='0.0.0.0', port=8000, reload=True)
+        
+    uvicorn.run('main:app', host='0.0.0.0', port=8002, reload=True)
